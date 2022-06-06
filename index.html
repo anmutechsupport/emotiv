@@ -1,63 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Brains@Play Template Device</title>
-    <script src="https://cdn.jsdelivr.net/npm/datastreams-api"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@brainsatplay/device"></script> -->
-    <script src="./dist/index.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>datastreams-api</title>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/visualscript@0.0.2/dist/index.js" defer></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@brainsatplay/ganglion"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/datastreams-api"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/brainsatplay-ui@0.0.7/dist/index.esm.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@brainsatplay/muse@0.0.1/dist/index.esm.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@brainsatplay/device@0.0.2/dist/index.esm.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@brainsatplay/hegduino@0.0.4/dist/index.esm.js"></script> -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
 
-</head>
-<body>
-    <button>Connect to Device</button>
-    <div></div>
+      body,
+      html {
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
 
+      body * {
+        box-sizing: border-box;
+      }
 
-    <script type="module">
+      h3 {
+        margin: 0px;
+        margin-top: 20px;
+      }
 
-        // ------------------------------------------------
-        // Test the Library on the Data Capture and Streams API (latest)
-        // ------------------------------------------------
-        
-        // // Optional: Import using ES6 Syntax
-        // import device from './dist/module.js'
+      visualscript-sidebar > div {
+        padding: 0px 15px;
+      }
 
-        // Create DataDevices Instance
-        const dataDevices = new datastreams.DataDevices()
+      #content {
+        padding: 25px;
+      }
 
-        // Press Button to Connect Device
-        const button = document.body.querySelector('button')
-        const div = document.body.querySelector('div')
-        button.onclick = async () => {
+      #timeseriesContainer {
+        max-width: 350px;
+        padding: 25px;
+        background: rgb(210, 210, 210);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
 
-            // Option A: Load device then filter for it (no config required for only device)
-            dataDevices.load(device)
-            const activeDevice = await dataDevices.getUserDevice()
+  <body>
+    <visualscript-app id="app" name="datastreams">
+      <!-- App Internal Dashboard -->
+      <visualscript-dashboard>
+        <visualscript-sidebar>
+          <div>
+            <h3>Device Connection</h3>
+            <!-- <visualscript-control
+              id="device"
+              type="select"
+              label="Device"
+              persist
+            ></visualscript-control> -->
+            <visualscript-control
+              id="file-selector"
+              type="file"
+              label="File"
+              multiple
+            ></visualscript-control>
 
-            // Option B: Pass the device directly
-            // const device = await dataDevices.getUserDevice(device)
+            <h3>Device Controls</h3>
+            <div id="deviceControl" style="padding: 10px; width: 100%">
+              <visualscript-button id="start">Start</visualscript-button>
+              <visualscript-button id="stop">Stop</visualscript-button>
+              <visualscript-button id="pause">Pause</visualscript-button>
+              <visualscript-button id="resume">Resume</visualscript-button>
+              <visualscript-button id="save">Save</visualscript-button>
+              <visualscript-control
+                id="record"
+                type="switch"
+                label="Record"
+                persist
+              ></visualscript-control>
+              <visualscript-control
+                id="saveMethod"
+                type="select"
+                label="Save Method"
+                persist
+              ></visualscript-control>
+            </div>
 
-            console.log('Device', activeDevice)
+            <h3>File Controls</h3>
+            <div id="fileControls" style="padding: 10px; width: 100%">
+              <visualscript-button id="fileStart">Start</visualscript-button>
+              <visualscript-button id="fileStop">Stop</visualscript-button>
+              <visualscript-button id="filePause">Pause</visualscript-button>
+              <visualscript-button id="fileResume">Resume</visualscript-button>
+            </div>
+          </div>
+        </visualscript-sidebar>
+        <visualscript-main>
+          <div id="content">
+            <div id="timeseriesContainer">
+              <visualscript-timeseries></visualscript-timeseries>
+            </div>
+          </div>
+        </visualscript-main>
+      </visualscript-dashboard>
+    </visualscript-app>
 
-            // Subscribe to Tracks in the Device Data Stream
-            activeDevice.stream.tracks.forEach((t,i) => {
-                const readout = document.createElement('p')
-                const strong = document.createElement('strong')
-                strong.innerHTML = `Track ${t.contentHint}: `
-                const span = document.createElement('span')
-                readout.insertAdjacentElement('beforeend', strong)
-                readout.insertAdjacentElement('beforeend', span)
-                div.insertAdjacentElement('beforeend', readout)
-                t.subscribe((data) => {
-                    span.innerHTML = data
-                })
-            })
+    <!-- Hidden Dashboard -->
+    <visualscript-dashboard>
+      <visualscript-nav>Visualscript</visualscript-nav>
+      <visualscript-sidebar></visualscript-sidebar>
+      <visualscript-main id="main">
+        <visualscript-overlay></visualscript-overlay>
+        <visualscript-tab id="webrtc" name="WebRTC Test">
+          Chatroom and Conference Room Stream coming soon...
+        </visualscript-tab>
+
+        <visualscript-tab id="realtime" name="Stream Analysis">
+          Coming soon...
+        </visualscript-tab>
+
+        <visualscript-tab id="graph" name="Graph Editor">
+          Coming soon...
+        </visualscript-tab>
+      </visualscript-main>
+      <visualscript-footer>Garrett Flynn | May 2022</visualscript-footer>
+    </visualscript-dashboard>
+  </body>
+
+  <script type="module">
+    // ------------- Import Libraries -------------
+    import * as visualscript from "https://cdn.jsdelivr.net/npm/visualscript@0.0.2/dist/index.esm.js";
+    // Data Acquisition
+    // import * as datastreams from "./dist/index.esm.js"
+    // import * as datastreams from "../src/index"
+    import * as datastreams from "https://cdn.jsdelivr.net/npm/datastreams-api@latest/dist/index.esm.js";
+    const dataDevices = new datastreams.DataDevices();
+
+    // ------------- Load All Device Drivers -------------
+    const devices = ["./dist/index.esm.js"];
+    for (let i = 0; i < devices.length; i++) {
+      let deviceStatus = (await import(devices[i])).default;
+      console.log(deviceStatus);
+      dataDevices.load(deviceStatus);
+    }
+
+    // const cortexDevice = {
+    //   // Generic
+    //   label: "cortex",
+    //   onconnect: () => {
+    //     console.log("Cortex Connected");
+    //   },
+    //   protocols: [],
+    // };
+
+    // dataDevices.load(cortexDevice);
+
+    // ------------- Setup Device Controls -------------
+    // const deviceControl = document.querySelector("#device");
+    const recordSwitch = document.getElementById("record");
+
+    dataDevices.getSupportedDevices().then((res) => {
+      // TODO: Fix enumerateDevices
+      const options = [];
+      res.forEach((o) => {
+        // Skip audio / video for now
+        if (!["audioinput", "audiooutput", "videoinput"].includes(o.kind)) {
+          const protocols = o.protocols.length > 0 ? o.protocols : [""];
+          const modes = o.modes ?? [""];
+
+          modes.forEach((mode) => {
+            protocols.forEach((protocol) =>
+              options.push({
+                text: `${o.label}${mode ? ` ${mode}` : ""}${
+                  protocol ? ` - ${protocol}` : ""
+                }`,
+                value: `${o.label}_${protocol}_${mode}`,
+              })
+            );
+          });
+        }
+      });
+
+      // deviceControl.options = options;
+      // deviceControl.onChange = (ev) => {
+      //   deviceLabel = ev.target.value;
+      // };
+      // deviceLabel = deviceControl.element.value;
+    });
+
+    recordSwitch.onChange = (ev) => {
+      record = recordSwitch.element.value;
+
+      if (!record) save.style.display = saveMethod.style.display = "none";
+      else if (dataControlInfo.start.style.display === "none") {
+        save.style.display = saveMethod.style.display = "inline-block";
+      }
+    };
+
+    // ------------- Setup Visualization (very rough) -------------
+    const content = document.getElementById("content");
+    const timeseries = content.querySelector("visualscript-timeseries");
+
+    // ------------- Declare Global Variables -------------
+    const allData = [];
+    let channels = 0;
+    let trackMap = new Map();
+    let contentHintToIndex = {};
+    let record = recordSwitch.element.value;
+    let deviceLabel = "emotiv";
+
+    // ------------- Declare Data Handler -------------
+    const ondata = (data, timestamps, contentHint) => {
+      // console.log(`Data from Electrode ${contentHintToIndex[contentHint]} (${contentHint})`, data, timestamps)
+    };
+
+    // ------------- Declare Track Handler -------------
+    const handleTrack = (track) => {
+      // ------------- Map Track Information (e.g. 10-20 Coordinate) to Index -------------
+      if (!trackMap.has(track.contentHint)) {
+        const index = trackMap.size;
+        contentHintToIndex[track.contentHint] = index;
+        trackMap.set(index, track);
+      }
+
+      // ------------- Grab Index -------------
+      const i = contentHintToIndex[track.contentHint];
+      channels = i > channels ? i : channels; // Assign channels as max track number
+
+      // ------------- Subscribe to New Data -------------
+      track.subscribe((data, timestamps) => {
+        // Organize New Data
+        let arr = [];
+        for (let j = 0; j <= channels; j++)
+          i === j ? arr.push(data) : arr.push([]);
+
+        // Add Data to Timeseries Graph
+        timeseries.data = arr;
+        timeseries.draw(); // FORCE DRAW: Update happens too fast for UI
+
+        // Run ondata Callback
+        ondata(data, timestamps, track.contentHint);
+      });
+    };
+
+    // ------------- Declare Acquisition Function -------------
+    let objectsToWatch = {
+      recorder: null,
+      datafile: null,
+    };
+
+    const saveMethod = document.getElementById("saveMethod");
+
+    const startAcquisition = async (label) => {
+      // ------------- Get Device Stream -------------
+      const split = label.split("_");
+      const constraints = { label: split[0] };
+      if (split?.[1]) constraints[split[1]] = true; // Protocol
+      if (split?.[2]) constraints.mode = split[2]; // Mode
+
+      // Method #1: By Label
+      const dataDevice = await dataDevices.getUserDevice(constraints);
+
+      // Method #2: By Class
+      // const dataDevice = await dataDevices.getUserDevice(ganglion)
+
+      // ------------- Grab DataStream from Device -------------
+      const stream = dataDevice.stream;
+
+      // ------------- Handle All Tracks -------------
+      stream.tracks.forEach(handleTrack);
+      stream.onaddtrack = (e) => handleTrack(e.track);
+
+      return dataDevice;
+    };
+
+    // ------------- Add Controls -------------
+    const start = document.getElementById("start");
+    const stop = document.getElementById("stop");
+    const pause = document.getElementById("pause");
+    const resume = document.getElementById("resume");
+    const save = document.getElementById("save");
+
+    const fileStart = document.getElementById("fileStart");
+    const fileStop = document.getElementById("fileStop");
+    const filePause = document.getElementById("filePause");
+    const fileResume = document.getElementById("fileResume");
+
+    const fileInfo = {
+      name: "datafile",
+      start: fileStart,
+      stop: fileStop,
+      pause: filePause,
+      resume: fileResume,
+    };
+
+    const dataControlInfo = {
+      name: "recorder",
+      start,
+      stop,
+      pause,
+      resume,
+      save,
+    };
+
+    const controls = [dataControlInfo, fileInfo];
+    controls.forEach((o) => {
+      o.stop.style.display =
+        o.pause.style.display =
+        o.resume.style.display =
+          "none";
+      if (o.save) o.save.style.display = saveMethod.style.display = "none";
+
+      if (o === fileInfo) {
+        o.start.style.opacity = "0.5";
+        o.start.style.pointerEvents = "none";
+      }
+
+      let device;
+      o.start.onclick = async () => {
+        if (o.name === "recorder") {
+          device = await startAcquisition(deviceLabel); // Start acquisition if match
+          console.log(deviceLabel);
+
+          // ------------- Manage Recording -------------
+          if (record) {
+            objectsToWatch.recorder = new datastreams.DataRecorder(device);
+            saveMethod.options = Array.from(
+              objectsToWatch.recorder.encoders.values()
+            ).map((o) => o.mimeType);
+            o.save.style.display = "inline-block";
+            saveMethod.style.display = "inline-block";
+          }
+
+          // recorder.ondataavailable = (e) =>  console.log('dataavailable!', e, e.detail)
+          // recorder.onerror = (e) => console.log('error!', e, e.detail)
+          // recorder.onpause = (e) =>  console.log('pause!', e, e.detail)
+          // recorder.onresume = (e) =>  console.log('resume!', e, e.detail)
+          // recorder.onstart = (e) =>  console.log('start!', e, e.detail)
+          // recorder.onstop = (e) =>  console.log('stop!', e, e.detail)
         }
 
-        
-    </script>
-    
-</body>
+        if (objectsToWatch[o.name]) {
+          // const gl = timeseries.util.plot.webgl
+          // gl.clear(gl.COLOR_BUFFER_BIT);
+          timeseries.buffers = [];
+          timeseries.data = [];
+
+          timeseries.util.plot.clear();
+
+          objectsToWatch[o.name].start();
+        }
+
+        o.start.style.display = "none";
+        o.stop.style.display = "inline-block";
+        o.pause.style.display = "inline-block";
+        o.resume.style.display = "inline-block";
+      };
+
+      o.stop.onclick = () => {
+        if (objectsToWatch[o.name]) {
+          objectsToWatch[o.name].stop();
+        }
+        o.start.style.display = "inline-block";
+        o.stop.style.display = "none";
+        o.pause.style.display = "none";
+        o.resume.style.display = "none";
+
+        if (device) device.disconnect();
+      };
+
+      o.pause.onclick = () => {
+        if (objectsToWatch[o.name]) {
+          objectsToWatch[o.name].pause();
+        }
+
+        o.pause.style.display = "none";
+        o.resume.style.display = "inline-block";
+      };
+
+      o.resume.onclick = () => {
+        if (objectsToWatch[o.name]) {
+          objectsToWatch[o.name].resume();
+        }
+
+        o.pause.style.display = "inline-block";
+        o.resume.style.display = "none";
+      };
+
+      if (o.save)
+        o.save.onclick = () => {
+          if (objectsToWatch[o.name]) {
+            objectsToWatch[o.name].save("test", {
+              // filter: ['0'],
+              destination: "file",
+              mimeType: saveMethod.value,
+            });
+          }
+        };
+    });
+
+    // File Loader
+    const fileSelector = document.getElementById("file-selector");
+
+    fileSelector.element.shadowRoot
+      .querySelector('input[type="file"]')
+      .addEventListener("change", (event) => {
+        const fileList = event.target.files;
+        for (let blob of fileList) {
+          const dataFile = new datastreams.DataFile(blob);
+          dataFile.tracks.forEach(handleTrack);
+          dataFile.onaddtrack = (e) => handleTrack(e.track);
+          objectsToWatch.datafile = dataFile; // watch it!
+          fileStart.style = "";
+
+          dataFile.onend = () => {
+            // TODO: Make this work
+            o.start.style.display = "inline-block";
+            o.stop.style.display = "none";
+            o.pause.style.display = "none";
+            o.resume.style.display = "none";
+          };
+        }
+      });
+  </script>
 </html>
